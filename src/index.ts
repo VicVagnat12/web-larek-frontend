@@ -2,7 +2,7 @@ import { ICard } from './types/index';
 import { EventEmitter } from './components/base/events';
 import './scss/styles.scss';
 import { API_URL } from './utils/constants';
-import { ShopApi } from './components/common/ShopAPI';
+import { ShopApi, OrderSuccess } from './components/common/ShopAPI';
 import { CatalogModel } from './components/common/catalogModel';
 import { BasketModel } from './components/common/basketModel';
 import { CardListView } from './components/common/cardListView';
@@ -15,6 +15,7 @@ import { Page } from './components/common/page';
 import { FormOrderView } from './components/common/formOrderView';
 import { FormContactsView } from './components/common/formContactsView';
 import { OrderSuccessView } from './components/common/orderSuccessView';
+import { OrderBuilder, OrderData } from './components/common/orderBuilder';
 
 const api = new ShopApi(API_URL);
 const events = new EventEmitter();
@@ -30,6 +31,7 @@ const page = new Page(document.querySelector('.page'), events);
 const orderFormTemplate = ensureElement<HTMLTemplateElement>('#order');
 const contactsFormTemplate = ensureElement<HTMLTemplateElement>('#contacts');
 const successTemplate = ensureElement<HTMLTemplateElement>('#success');
+const orderData = new OrderBuilder();
 
 api
 	.getCards()
@@ -164,18 +166,43 @@ events.on('contacts:submit', () => {
 	const totalPrice = basketModel.items.reduce((sum, id) => {
 		return sum + catalogModel.getItem(id).price;
 	}, 0);
+
+	orderData.setData('items', basketModel.items);
+	orderData.setData('total', totalPrice);
+
+	api.order(orderData.build())
+	.then((data) => events.emit('order:success', { total: data.total }))
+	.catch((err) => console.error(err));
+});
+
+events.on('order:success', (data: OrderSuccess) => {
 	const successOrder = new OrderSuccessView(
 		cloneTemplate(successTemplate) as HTMLElement,
 		events
 	);
 	modal.render({
 		content: successOrder.render({
-			description: `Списано ${totalPrice} синапсов`,
+			description: `Списано ${data.total} синапсов`,
 		}),
 	});
 	basketModel.items = [];
 	page.basketCounter = 0;
-});
+	orderData.clear();
+})
+ 
+events.on(
+	/^order\..*:change/,
+	<K extends keyof OrderData>(data: { field: K, value: OrderData[K] }) => {
+		orderData.setData(data.field, data.value);
+	}
+);
+
+events.on(
+	/^contacts\..*:change/,
+	<K extends keyof OrderData>(data: { field: K, value: OrderData[K] }) => {
+		orderData.setData(data.field, data.value);
+	}
+);
 
 events.on('ui:successOrder-close', () => {
 	modal.close();

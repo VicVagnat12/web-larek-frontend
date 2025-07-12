@@ -38,12 +38,8 @@ export class Form<T> extends Component<IFormState> {
     }
 
     set valid(value: boolean) {
-		if (value) {
-			this.setDisabled(this._submit, false);
-		} else {
-			this.setDisabled(this._submit, true);
-		}
-	}
+        this.setDisabled(this._submit, !value);
+    }
 
     set errors(value: string) {
         this.setText(this._errors, value);

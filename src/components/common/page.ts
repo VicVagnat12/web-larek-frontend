@@ -30,11 +30,7 @@ export class Page extends Component<IPage> {
 		this.setText(this._basketCounter, value);
 	}
 
-	set locked(value: boolean) {
-		if (value) {
-			this.toggleClass(this._wrapper, 'page__wrapper_locked', true);
-		} else {
-			this.toggleClass(this._wrapper, 'page__wrapper_locked');
-		}
-	}
+    set locked(value: boolean) {
+        this.toggleClass(this._wrapper, 'page__wrapper_locked', value);
+    }
 }

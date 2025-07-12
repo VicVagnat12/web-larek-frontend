@@ -22,16 +22,13 @@ export class FormOrderView extends Form<IOrderFormData> {
 	}
 
 	private handlePaymentSelect(paymentType: 'card' | 'cash') {
-		this.container.querySelectorAll('.button_alt').forEach((button) => {
-			button.classList.remove('button_active');
+		this.container.querySelectorAll('.button_alt').forEach((button: HTMLElement) => {
+			this.toggleClass(button, 'button_active');
 			(button as HTMLElement).style.border = 'none';
 		});
 
-		const selectedButton = ensureElement<HTMLButtonElement>(
-			`button[name="${paymentType}"]`,
-			this.container
-		);
-		selectedButton.classList.add('button_active');
+		const selectedButton = ensureElement<HTMLButtonElement>(`button[name="${paymentType}"]`,this.container);
+		this.toggleClass(selectedButton, 'button_active', true);
 		selectedButton.style.border = '2px solid rgba(255, 255, 255, 1)';
 
 		this.onInputChange('payment', paymentType);
@@ -51,9 +48,9 @@ export class FormOrderView extends Form<IOrderFormData> {
 		const addressError = ensureElement<HTMLSpanElement>('.form__errors');
 
 		if (!isAddressValid) {
-			addressError.textContent = 'Необходимо указать адрес';
+			this.setText(addressError, 'Необходимо указать адрес');
 		} else {
-			addressError.textContent = '';
+			this.setText(addressError, '');
 		}
 		this.valid = isAddressValid && isPaymentSelected;
 	}

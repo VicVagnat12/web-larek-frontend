@@ -75,7 +75,7 @@ export class CardView extends Component<ICard> {
 			value ? `${value.toString()} синапсов` : 'Бесценно'
 		);
 		if (value === null && this._button) {
-			this._button.disabled = true;
+			this.setDisabled(this._button, true);
 			this.button = 'Недоступно';
 		}
 	}

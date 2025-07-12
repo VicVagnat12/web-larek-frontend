@@ -26,7 +26,7 @@ export class OrderSuccessView extends Component<ISuccessData> {
 	}
 	render(data: ISuccessData) {
 		super.render();
-		this.description.textContent = data.description;
+		this.setText(this.description, data.description);
 		return this.container;
 	}
 }

@@ -28,9 +28,9 @@ export class BasketItemView extends Component<HTMLElement> {
 	render(data: { id: string; index: number; title: string; price: string }) {
 		if (data) {
 			this.id = data.id;
-			this.title.textContent = data.title;
-			this.price.textContent = data.price;
-			this.index.textContent = data.index.toString();
+			this.setText(this.title, data.title);
+			this.setText(this.price, data.price);
+			this.setText(this.index, data.index.toString());
 		}
 		return this.container;
 	}

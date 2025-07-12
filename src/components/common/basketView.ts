@@ -29,11 +29,11 @@ export class BasketView extends Component<IBasketData> {
 		super.render();
 		if (data) {
 			this.list.replaceChildren(...data.items);
-			this.basketPrice.textContent = data.price;
+			this.setText(this.basketPrice, data.price);
 		}
 		if (data.items.length === 0) {
 			const message = document.createElement('span');
-			message.textContent = 'Корзина пуста';
+			this.setText(message, 'Корзина пуста');
 			message.style.opacity = '0.3';
 			this.list.append(message);
 			this.checkOutButton.style.opacity = '0.3';
